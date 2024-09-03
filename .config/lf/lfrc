@@ -1,0 +1,188 @@
+# set previewer ~/.config/lf/scope-lf-wrapper
+# set previewer ~/.config/lf/lf_kitty_preview
+# set cleaner ~/.config/lf/lf_kitty_clean
+
+set previewer ctpv
+set cleaner ctpvclear
+&ctpv -s $id
+&ctpvquit $id
+
+# Basic Settings
+set hidden true
+set ignorecase true
+set icons true
+set period 1
+set info size:time
+set dircounts
+set scrolloff 10
+
+# Custom Functions
+cmd open $set -f; rifle -p 0 $fx
+
+cmd open-with-emacs &{{emacsclient -c -a emacs $fx}}
+
+cmd open-with-nvim ${{nvim $fx}}
+
+cmd mkdir ${{
+  printf "Directory Name: "
+  read ans
+  mkdir $ans
+}}
+
+cmd mkfile ${{
+  printf "File Name: "
+  read ans
+  $EDITOR $ans
+}}
+
+cmd setwallpaper ${{
+    cp "$f" ~/.config/wall.jpg
+    xwallpaper --zoom "$f"
+    betterlockscreen -u "$f" --fx
+}}
+
+# Archive bindings
+cmd unarchive ${{
+  case "$f" in
+      *.zip) unzip "$f" ;;
+      *.tar.gz) tar -xzvf "$f" ;;
+      *.tar.bz2) tar -xjvf "$f" ;;
+      *.tar) tar -xvf "$f" ;;
+      *) echo "Unsupported format" ;;
+  esac
+}}
+
+# Trash bindings
+cmd trash ${{
+  files=$(printf "$fx" | tr '\n' ';')
+  while [ "$files" ]; do
+    file=${files%%;*}
+
+    trash-put "$(basename "$file")"
+    if [ "$files" = "$file" ]; then
+      files=''
+    else
+      files="${files#*;}"
+    fi
+  done
+}}
+
+cmd restore_trash ${{
+  trash-restore
+}}
+
+# Yanking
+cmd yank-dirname $dirname -- "$f" | head -c-1 | xclip -i -selection clipboard
+cmd yank-path $printf '%s' "$fx" | xclip -i -selection clipboard
+cmd yank-basename $basename -a -- $fx | head -c-1 | xclip -i -selection clipboard
+
+cmd yank-basename-without-extension ${{
+    echo "$fx" |
+      xargs -r -d '\n' basename -a |
+      awk -e '{
+        for (i=length($0); i > 0; i--) {
+          if (substr($0, i, 1) == ".") {
+            if (i == 1) print $0
+            else print substr($0, 0, i-1)
+
+            break
+          }
+        }
+
+        if (i == 0)
+          print $0
+      }' |
+      if [ -n "$fs" ]; then cat; else tr -d '\n'; fi |
+      xclip -i -selection clipboard
+}}
+
+# Bulk rename
+cmd bulk-rename ${{
+    old="$(mktemp)"
+    new="$(mktemp)"
+    if [ -n "$fs" ]; then
+        fs="$(basename -a $fs)"
+    else
+        fs="$(ls)"
+    fi
+    printf '%s\n' "$fs" >"$old"
+    printf '%s\n' "$fs" >"$new"
+    $EDITOR "$new"
+    [ "$(wc -l < "$new")" -ne "$(wc -l < "$old")" ] && exit
+    paste "$old" "$new" | while IFS= read -r names; do
+        src="$(printf '%s' "$names" | cut -f1)"
+        dst="$(printf '%s' "$names" | cut -f2)"
+        if [ "$src" = "$dst" ] || [ -e "$dst" ]; then
+            continue
+        fi
+        mv -- "$src" "$dst"
+    done
+    rm -- "$old" "$new"
+    lf -remote "send $id unselect"
+}}
+
+# Toggle preview
+cmd toggle_preview %{{
+    if [ "$lf_preview" = "true" ]; then
+        lf -remote "send $id :set preview false; set ratios 1"
+    else
+        lf -remote "send $id :set preview true; set ratios 1:2:3"
+    fi
+}}
+
+# Bindings
+map d
+map m
+map y
+map w
+
+# Rename 
+map a rename
+map I :rename; cmd-home
+map A :rename; cmd-end
+map c :rename; cmd-delete-home
+map C :rename; cmd-end; cmd-delete-home
+map br bulk-rename
+
+# map c $vscodium "$f"
+
+# map au unarchive
+# map ae $wine "$f"
+
+# Basic Functions
+map . set hidden!
+map p : paste; clear
+map <enter> open
+map R reload
+map mf mkfile
+map md mkdir
+map bg setwallpaper
+map K half-up
+map J half-down
+map <f-7> mkdir
+map u clear
+map zp toggle_preview
+map S $$SHELL
+map e open-with-emacs
+map E open-with-nvim
+
+# Delete and cut
+map dd cut
+map dD trash
+map dr restore_trash
+
+# Yanking
+map yy copy
+map yd yank-dirname
+map yn yank-basename
+map yp yank-path
+map y. yank-basename-without-extension 
+
+# Movement
+map gD cd ~/Documents
+map gd cd ~/Downloads
+# map gp cd ~/Pictures
+map gc cd ~/.config
+map gv cd ~/Videos
+map gs cd /home/DATA/Documents/Sync
+map gt cd ~/.local/share/Trash/files
