@@ -1,0 +1,36 @@
+[pyprland]
+plugins = [
+    "scratchpads",
+]
+
+[scratchpads.term]
+animation = "fromTop"
+command = "kitty --class kitty-dropterm"
+class = "kitty-dropterm"
+size = "75% 60%"
+max_size = "1920px 100%"
+margin = 120
+
+[scratchpads.pavu]
+animation = "fromTop"
+command = "pavucontrol"
+class = "pavucontrol"
+size = "75% 60%"
+max_size = "1920px 100%"
+margin = 120
+
+[scratchpads.vim]
+animation = "fromTop"
+command = "kitty --class nvim-dropterm nvim"
+class = "nvim-dropterm"
+size = "75% 60%"
+max_size = "1920px 100%"
+margin = 120
+
+[scratchpads.yazi]
+animation = "fromTop"
+command = "kitty --class yazi-dropterm yazi"
+class = "yazi-dropterm"
+size = "75% 60%"
+max_size = "1920px 100%"
+margin = 120

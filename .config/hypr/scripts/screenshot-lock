@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+image="$HOME/tmp/lockscreen-image.png"
+
+grim -s 0.2 "$image"
+convert "$image" -blur 0x4 "$image"
+"$HOME"/.config/hypr/scripts/lockscreen
