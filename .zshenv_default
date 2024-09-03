@@ -1,0 +1,28 @@
+#!/usr/bin/env zsh
+
+# Append "$1" to $PATH when not already in.
+# This function API is accessible to scripts in /etc/profile.d
+append_path () {
+    case ":$PATH:" in
+        *:"$1":*)
+            ;;
+        *)
+            PATH="${PATH:+$PATH:}$1"
+    esac
+}
+
+# Append our default paths
+# append_path '/home/pmikhail/programs/platform-tools'
+
+unset BROWSER
+
+export MANPAGER='nvim +Man!'
+
+export PAGER='most'
+
+export EDITOR='nvim'
+export VISUAL='nvim'
+# export JAVA_HOME=''
+# export _JAVA_AWT_WM_NONREPARENTING=1
+
+append_path $JAVA_HOME/bin
