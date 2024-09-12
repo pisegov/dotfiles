@@ -43,8 +43,7 @@ require("lazy").setup({
     "tpope/vim-repeat",
     "tpope/vim-commentary",
 
-    "https://gitlab.com/__tpb/monokai-pro.nvim",
-
+    "navarasu/onedark.nvim",
     {
         "folke/which-key.nvim",
         event = "VeryLazy",
@@ -105,4 +104,15 @@ require("lazy").setup({
             -- refer to the configuration section below
         }
     },
+    {
+        'mikesmithgh/kitty-scrollback.nvim',
+        enabled = true,
+        lazy = true,
+        cmd = { 'KittyScrollbackGenerateKittens', 'KittyScrollbackCheckHealth' },
+        event = { 'User KittyScrollbackLaunch' },
+        version = '*', -- latest stable version, may have breaking changes if major version changed
+        config = function()
+            require('kitty-scrollback').setup()
+        end,
+    }
 })

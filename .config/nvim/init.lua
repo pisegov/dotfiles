@@ -1,14 +1,9 @@
 require('keymaps')
 require('options')
 require('plugins.lazy')
+require('plugins.onedark')
 require('plugins.lualine')
 require('plugins.mason')
 require('plugins.treesitter')
 require('plugins.lsp')
 require('plugins.telescope')
-require('colorscheme')
-
-
-
-
-

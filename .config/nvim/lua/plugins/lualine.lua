@@ -1,5 +1,1 @@
-require('lualine').setup {
-  options = {
-    theme = 'monokaipro'
-  }
-}
+require('lualine').setup()
