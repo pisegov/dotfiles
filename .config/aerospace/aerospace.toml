@@ -4,12 +4,25 @@
 # You can use it to add commands that run after login to macOS user session.
 # 'start-at-login' needs to be 'true' for 'after-login-command' to work
 # Available commands: https://nikitabobko.github.io/AeroSpace/commands
-after-login-command = []
+after-login-command = [
+                    'exec-and-forget syncthing',
+                    'exec-and-forget emacs --daemon',
+]
 
 # You can use it to add commands that run after AeroSpace startup.
 # 'after-startup-command' is run after 'after-login-command'
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
-after-startup-command = []
+after-startup-command = [
+                      'exec-and-forget borders active_color=0xff7aa2f7 inactive_color=0xff494d64 width=5.0',
+                      'exec-and-forget sketchybar',
+]
+
+# Notify Sketchybar about workspace change
+exec-on-workspace-change = ['/bin/bash', '-c',
+    '''sketchybar --trigger aerospace_workspace_change \
+    FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE \
+''',
+]
 
 # Start AeroSpace at login
 start-at-login = true
@@ -21,7 +34,7 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 # See: https://nikitabobko.github.io/AeroSpace/guide#layouts
 # The 'accordion-padding' specifies the size of accordion padding
 # You can set 0 to disable the padding feature
-accordion-padding = 30
+accordion-padding = 130
 
 # Possible values: tiles|accordion
 default-root-container-layout = 'tiles'
@@ -41,6 +54,7 @@ key-mapping.preset = 'qwerty'
 # See https://nikitabobko.github.io/AeroSpace/commands#move-mouse
 # Fallback value (if you omit the key): on-focused-monitor-changed = []
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+on-focus-changed = ['move-mouse window-lazy-center'] # Mouse lazily follows any focus (window or workspace)
 
 # Gaps between windows (inner-*) and between monitor edges (outer-*).
 # Possible values:
@@ -54,7 +68,7 @@ inner.horizontal = 10
 inner.vertical =   10
 outer.left =       10
 outer.bottom =     10
-outer.top =        10
+outer.top =        54
 outer.right =      10
 
 # 'main' binding mode declaration
@@ -79,13 +93,15 @@ outer.right =      10
 # All possible commands: https://nikitabobko.github.io/AeroSpace/commands
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#exec-and-forget
-# You can uncomment the following lines to open up terminal with alt + enter shortcut (like in i3)
-# alt-enter = '''exec-and-forget osascript -e '
-# tell application "Terminal"
-#     do script
-#     activate
-# end tell'
-# '''
+alt-enter = 'exec-and-forget kitty ~'
+alt-shift-enter = 'exec-and-forget emacsclient --create-frame'
+
+alt-space = '''exec-and-forget osascript -e '
+tell application "System Events"
+    key code 126 using control down -- This triggers Control + Up Arrow
+end tell'
+'''
+ctrl-space = "exec-and-forget sketchybar --trigger keyboard_layout_change"
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#layout
 alt-slash = 'layout tiles horizontal vertical'
@@ -97,6 +113,10 @@ alt-j = 'focus down'
 alt-k = 'focus up'
 alt-l = 'focus right'
 
+# See: https://nikitabobko.github.io/AeroSpace/commands#focus-monitor
+alt-m = 'focus-monitor left'
+alt-period = 'focus-monitor right'
+
 alt-f = 'fullscreen'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move
@@ -106,12 +126,14 @@ alt-shift-k = 'move up'
 alt-shift-l = 'move right'
 
 alt-shift-f = 'layout floating tiling'
+cmd-shift-q = 'close'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#resize
-alt-shift-minus = 'resize smart -50'
-alt-shift-equal = 'resize smart +50'
+alt-x = 'resize smart -50'
+alt-c = 'resize smart +50'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
+
 alt-q = 'workspace 1'
 alt-w = 'workspace 2'
 alt-e = 'workspace 3'
@@ -137,9 +159,22 @@ alt-shift-o = 'move-node-to-workspace 9'
 alt-tab = 'workspace-back-and-forth'
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+alt-shift-m = ['move-node-to-monitor left', 'focus-monitor left']
+alt-shift-period = ['move-node-to-monitor right', 'focus-monitor right' ]
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 alt-shift-semicolon = 'mode service'
+
+[workspace-to-monitor-force-assignment]
+1 = 'main'
+2 = 'main'
+3 = 'main'
+4 = 'main'
+5 = 'main'
+6 = 'secondary'
+7 = 'secondary'
+8 = 'secondary'
+9 = 'secondary'
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -148,7 +183,7 @@ esc = ['reload-config', 'mode main']
 r = ['flatten-workspace-tree', 'mode main'] # reset layout
 f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
 backspace = ['close-all-windows-but-current', 'mode main']
-
+l = ['exec-and-forget pmset displaysleepnow', 'mode main' ]
 # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
 #s = ['layout sticky tiling', 'mode main']
 
@@ -156,3 +191,13 @@ alt-shift-h = ['join-with left', 'mode main']
 alt-shift-j = ['join-with down', 'mode main']
 alt-shift-k = ['join-with up', 'mode main']
 alt-shift-l = ['join-with right', 'mode main']
+
+[[on-window-detected]]
+if.app-id = 'com.cisco.anyconnect.gui'
+check-further-callbacks = true
+run = 'layout floating'
+
+[[on-window-detected]]
+if.window-title-regex-substring = 'Running Devices'
+check-further-callbacks = true
+run = 'layout tiling'
