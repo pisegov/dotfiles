@@ -82,5 +82,5 @@
   :recipe (:host github :repo "wdavew/org-excalidraw"))
 
 
-(package! telega)
+;; (package! telega)
 (package! rainbow-mode)
