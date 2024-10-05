@@ -389,6 +389,7 @@
              "SIDE(s)"           ; A daily adventure
              "|"                 ; The pipe necessary to separate "active" states and "inactive" states
              "DONE(d)"           ; Task has been completed
+             "HOLD(h)"           ; Task has been postponed
              "CANCELLED(c)" ))   ; Task has been cancelled
         org-todo-keyword-faces
           '(
