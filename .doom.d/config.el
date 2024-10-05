@@ -517,7 +517,7 @@
 
 (use-package! org-excalidraw
   :config
-  (setq org-excalidraw-directory "~/Notes/RoamNotes/drawings"
+  (setq org-excalidraw-directory "drawings"
         org-excalidraw-base "{\n    \"type\": \"excalidraw\",\n    \"version\": 2,\n    \"source\": \"https://excalidraw.com\",\n    \"elements\": [],\n    \"appState\": {\n      \"gridSize\": null,\n      \"viewBackgroundColor\": \"#cfd4de\"\n    },\n    \"files\": {}\n  }\n"
         )
 )
