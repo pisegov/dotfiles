@@ -130,6 +130,7 @@
               evil-xkbswitch-get-layout (getenv "XKBSWITCH_GET_LAYOUT")
               evil-xkbswitch--us-method (getenv "XKBSWITCH_US_METHOD"))
 
+(setq fancy-splash-image "~/Pictures/doom_icon_2.png")
 
 (use-package char-fold
   :custom
