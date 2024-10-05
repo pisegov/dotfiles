@@ -125,11 +125,11 @@
 (use-package evil-xkbswitch)
         :custom
         (evil-xkbswitch-mode t)
+        :config
+        (setq evil-xkbswitch-set-layout (getenv "XKBSWITCH_SET_LAYOUT")
+              evil-xkbswitch-get-layout (getenv "XKBSWITCH_GET_LAYOUT")
+              evil-xkbswitch--us-method (getenv "XKBSWITCH_US_METHOD"))
 
-;; (setq evil-xkbswitch-set-layout "hyprskl")
-;; (setq evil-xkbswitch-get-layout "hyprskl")
-(setq evil-xkbswitch-set-layout "xkb-switch -s")
-(setq evil-xkbswitch-get-layout "xkb-switch")
 
 (use-package char-fold
   :custom
