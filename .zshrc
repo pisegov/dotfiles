@@ -190,5 +190,10 @@ alias update='sudo pacman -Syyu --noconfirm && yay -Su --noconfirm'
 #grub update
 alias update-grub="sudo grub-mkconfig -o /boot/grub/grub.cfg"
 
+
+# source custom functions
+source ~/.zsh_custom_funs
+
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

@@ -68,6 +68,9 @@ vnoremap <Space> :action LeaderAction<cr>
 Plug 'preservim/nerdtree'
 set sneak
 
+set keep-english-in-normal-and-restore-in-insert 
+let keep_input_source_in_insert=RussianWin
+
 map й q
 map ц w
 map у e
