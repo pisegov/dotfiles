@@ -167,12 +167,12 @@ alias v="nvim"
 alias vr="nvim -R -c 'nnoremap q :q<CR>'"
 alias se="sudoedit"
 
-# Changing "ls" to "exa"
-alias ls='exa -al --color=always --group-directories-first'
-alias la='exa -a --color=always --group-directories-first'
-alias ll='exa -l --color=always --group-directories-first'
-alias lt='exa -aT --color=always --group-directories-first'
-alias l.='exa -a | egrep "^\."'
+# Changing "ls" to "lsd"
+alias ls='lsd -al --color=always --group-directories-first'
+alias la='lsd -a --color=always --group-directories-first'
+alias ll='lsd -l --color=always --group-directories-first'
+alias lt='lsd -aT --color=always --group-directories-first'
+alias l.='lsd -a | egrep "^\."'
 ## Colorize the grep command output for ease of use (good for log files)##
 alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
