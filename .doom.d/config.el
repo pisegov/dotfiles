@@ -132,6 +132,8 @@
 
 (setq fancy-splash-image "~/Pictures/doom_icon_2.png")
 
+(add-to-list 'default-frame-alist '(alpha . 95))
+
 (use-package char-fold
   :custom
   (char-fold-symmetric t)
