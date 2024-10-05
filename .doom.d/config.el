@@ -38,6 +38,9 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Notes/Org-base")
 
+;; Swap keys behaviour on mac os
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier 'super)
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
