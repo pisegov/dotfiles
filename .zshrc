@@ -164,6 +164,7 @@ alias fansauto='nbfc set -f 0 -a'
 alias vim="nvim"
 alias vi="nvim"
 alias v="nvim"
+alias vr="nvim -R -c 'nnoremap q :q<CR>'"
 alias se="sudoedit"
 
 # Changing "ls" to "exa"

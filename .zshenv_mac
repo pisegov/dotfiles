@@ -1,0 +1,4 @@
+#!/usr/bin/env zsh
+#
+export GIT_AUTHOR_EMAIL='m.pisegov@vkteam.ru'
+export GIT_COMMITTER_EMAIL='m.pisegov@vkteam.ru'

@@ -1,0 +1,11 @@
+[user]
+	name = Mikhail Pisegov
+[color]
+	pager = no
+[core]
+	pager = bat
+[push]
+	autoSetupRemote = true
+[alias]
+	reset-last = reset HEAD~1
+	temp = "commit -am 'work in progress'"
