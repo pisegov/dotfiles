@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+
+export GIT_AUTHOR_EMAIL='pisegov.mikhail@gmail.com'
+export GIT_COMMITTER_EMAIL='pisegov.mikhail@gmail.com'
+
+export XKBSWITCH_SET_LAYOUT='hyprskl'
+export XKBSWITCH_GET_LAYOUT='hyprskl'
+export XKBSWITCH_US_METHOD='us'
