@@ -1,0 +1,30 @@
+(defvar
+    tt 150
+    ht 100
+    )
+
+(defsrc
+  caps q w e r u i o p
+)
+
+(defalias
+    ;; hold timeout used for both timeout properties in purpose
+    ;; because i don't need to input multiple escapes when i tap + release + tap again
+  escctrl (tap-hold-press $ht $ht esc lctrl)
+
+  e (tap-hold-release $tt $ht e lalt)
+  i (tap-hold-release $tt $ht i ralt)
+
+  w (tap-hold-release $tt $ht w lctrl)
+  o (tap-hold-release $tt $ht o rctrl)
+
+  q (tap-hold-release $tt $ht q lmet)
+  p (tap-hold-release $tt $ht p rmet)
+
+  r (tap-hold-release $tt $ht r lsft)
+  u (tap-hold-release $tt $ht u rsft)
+)
+
+(deflayer base
+    @escctrl @q @w @e @r  @u @i @o @p
+)
