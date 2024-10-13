@@ -1,7 +1,11 @@
 (defvar
     tt 150
     ht 100
-    )
+)
+
+(defcfg
+    macos-dev-names-include ("Apple Internal Keyboard / Trackpad")
+)
 
 (defsrc
   caps q w e r u i o p
