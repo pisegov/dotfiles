@@ -78,8 +78,10 @@
 (package! org-roam)
 (unpin! org-roam)
 (package! org-roam-ui)
+(package! org-yt
+  :recipe (:host github :repo "TobiasZawada/org-yt"))
 (package! org-excalidraw
-  :recipe (:host github :repo "wdavew/org-excalidraw"))
+  :recipe (:host github :repo "andrewpeck/org-excalidraw"))
 
 
 ;; (package! telega)

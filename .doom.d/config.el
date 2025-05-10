@@ -519,13 +519,6 @@
         )
   )
 
-(use-package! org-excalidraw
-  :config
-  (setq org-excalidraw-directory "drawings"
-        org-excalidraw-base "{\n    \"type\": \"excalidraw\",\n    \"version\": 2,\n    \"source\": \"https://excalidraw.com\",\n    \"elements\": [],\n    \"appState\": {\n      \"gridSize\": null,\n      \"viewBackgroundColor\": \"#cfd4de\"\n    },\n    \"files\": {}\n  }\n"
-        )
-)
-
 (after! org
   (setq org-download-method 'directory)
   (setq org-download-image-dir "images")
@@ -538,6 +531,16 @@
         :desc "paste screenshot" "s" #'org-download-screenshot)
         :desc "toggle inline images" "i t" #'org-toggle-inline-images
         :desc "open at point" "i o" #'org-open-at-point))
+
+;; Org Excalidraw
+(use-package! org-excalidraw
+  :config
+  (setq org-excalidraw-directory "drawings"
+        org-excalidraw-base "{\n    \"type\": \"excalidraw\",\n    \"version\": 2,\n    \"source\": \"https://excalidraw.com\",\n    \"elements\": [],\n    \"appState\": {\n      \"gridSize\": null,\n      \"viewBackgroundColor\": \"#cfd4de\"\n    },\n    \"files\": {}\n  }\n"
+        )
+)
+(use-package! org-yt)
+(add-hook 'org-roam-mode-hook 'org-excalidraw-initialize)
 
 
 ;; Org auto-tangle
