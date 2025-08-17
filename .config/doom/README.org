@@ -1,0 +1,802 @@
+#+title: DoomEmacs Config
+#+property: header-args :tangle config.el
+#+auto_tangle: t
+
+* Doom Emacs Config
+
+Place your private configuration here! Remember, you do not need to run 'doom
+sync' after modifying ~config.el~ file!
+* Instructions
+** Lexical binding
+
+#+begin_src emacs-lisp
+;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+
+;; DO NOT EDIT THIS CONFIG. IT'S AUTO TANGLED FROM README.ORG
+;; EDIT README.ORG INSTEAD
+#+end_src
+
+#+begin_src emacs-lisp :tangle packages.el
+;; -*- no-byte-compile: t; -*-
+;;; $DOOMDIR/packages.el
+
+;; DO NOT EDIT THIS CONFIG. IT'S AUTO TANGLED FROM README.ORG
+;; EDIT README.ORG INSTEAD
+#+end_src
+
+** Config
+Whenever you reconfigure a package, make sure to wrap your config in an
+~after!~ block, otherwise Doom's defaults may override your settings. E.g.
+
+#+begin_src emacs-lisp :tangle no
+(after! PACKAGE
+  (setq x y))
+#+end_src
+
+The exceptions to this rule:
+
+- Setting file/directory variables (like ~org-directory~)
+- Setting variables which explicitly tell you to set them before their
+  package is loaded (see ~C-h v VARIABLE~ to look up their documentation).
+- Setting doom variables (which start with ~doom-~ or ~+~).
+
+Here are some additional functions/macros that will help you configure Doom.
+
+- ~load!~ for loading external *.el files relative to this one
+- ~use-package!~ for configuring packages
+- ~after!~ for running code after a package has loaded
+- ~add-load-path!~ for adding directories to the ~load-path~, relative to
+  this file. Emacs searches the ~load-path~ when you load packages with
+  ~require~ or ~use-package~.
+- ~map!~ for binding new keys
+
+To get information about any of these functions/macros, move the cursor over
+the highlighted symbol at press ~K~ (non-evil users must press ~C-c c k~).
+This will open documentation for it, including demos of how they are used.
+Alternatively, use ~C-h o~ to look up a symbol (functions, variables, faces,
+etc).
+
+You can also try ~gd~ (or ~C-c c d~) to jump to their definition and see how
+they are implemented.
+
+** Packages
+To install a package with Doom you must declare them here and run ~doom sync~
+on the command line, then restart Emacs for the changes to take effect -- or
+
+To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
+
+#+begin_src emacs-lisp :tangle no
+(package! some-package)
+#+end_src
+
+To install a package directly from a remote git repo, you must specify a
+~:recipe~. You'll find documentation on what ~:recipe~ accepts here:
+https://github.com/radian-software/straight.el#the-recipe-format
+#+begin_src emacs-lisp :tangle no
+(package! another-package
+  :recipe (:host github :repo "username/repo"))
+#+end_src
+
+If the package you are trying to install does not contain a PACKAGENAME.el
+file, or is located in a subdirectory of the repo, you'll need to specify
+~:files~ in the ~:recipe~:
+#+begin_src emacs-lisp :tangle no
+(package! this-package
+  :recipe (:host github :repo "username/repo"
+           :files ("some-file.el" "src/lisp/*.el")))
+#+end_src
+
+If you'd like to disable a package included with Doom, you can do so here
+with the ~:disable~ property:
+#+begin_src emacs-lisp :tangle no
+(package! builtin-package :disable t)
+#+end_src
+
+You can override the recipe of a built in package without having to specify
+all the properties for ~:recipe~. These will inherit the rest of its recipe
+from Doom or MELPA/ELPA/Emacsmirror:
+#+begin_src emacs-lisp :tangle no
+(package! builtin-package :recipe (:nonrecursive t))
+(package! builtin-package-2 :recipe (:repo "myfork/package"))
+#+end_src
+
+Specify a ~:branch~ to install a package from a particular branch or tag.
+This is required for some packages whose default branch isn~t ~master~ (which
+our package manager can~t deal with; see radian-software/straight.el#279)
+#+begin_src emacs-lisp :tangle no
+(package! builtin-package :recipe (:branch "develop"))
+#+end_src
+
+Use ~:pin~ to specify a particular commit to install.
+#+begin_src emacs-lisp :tangle no
+(package! builtin-package :pin "1a2b3c4d5e")
+#+end_src
+
+Doom's packages are pinned to a specific commit and updated from release to
+release. The ~unpin!~ macro allows you to unpin single packages...
+#+begin_src emacs-lisp :tangle no
+(unpin! pinned-package)
+#+end_src
+
+...or multiple packages
+#+begin_src emacs-lisp :tangle no
+(unpin! pinned-package another-pinned-package)
+#+end_src
+
+...Or *all* packages (NOT RECOMMENDED; will likely break things)
+#+begin_src emacs-lisp :tangle no
+(unpin! t)
+#+end_src
+
+* Basics
+** Identity
+
+Some functionality uses this to identify you, e.g. GPG configuration, email
+clients, file templates and snippets. It is optional.
+
+#+begin_src emacs-lisp
+(setq user-full-name "Mikhail Pisegov"
+      user-mail-address "pisegov.mikhail@gmail.com")
+#+end_src
+
+** Fonts
+Doom exposes five (optional) variables for controlling fonts in Doom:
+
+- ~doom-font~ -- the primary font to use
+- ~doom-variable-pitch-font~ -- a non-monospace font (where applicable)
+- ~doom-big-font~ -- used for ~doom-big-font-mode~; use this for
+  presentations or streaming.
+- ~doom-symbol-font~ -- for symbols
+- ~doom-serif-font~ -- for the ~fixed-pitch-serif~ face
+
+See ~C-h v doom-font~ for documentation and more examples of what they
+accept. For example:
+
+#+begin_src emacs-lisp :tangle no
+(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
+#+end_src
+
+If you or Emacs can't find your font, use ~M-x describe-font~ to look them
+up, ~M-x eval-region~ to execute elisp code, and ~M-x doom/reload-font~ to
+refresh your font settings. If Emacs still can't find your font, it likely
+wasn't installed correctly. Font issues are rarely Doom issues!
+
+*** Size
+This will increase the size while keeping the current font family
+#+begin_src emacs-lisp
+(setq doom-font (font-spec :size 17))
+#+end_src
+
+** Theme
+There are two ways to load a theme. Both assume the theme is installed and
+available. You can either set ~doom-theme~ or manually load a theme with the
+~load-theme~ function. This is the default:
+
+#+begin_src emacs-lisp
+(setq doom-theme 'doom-zenburn)
+#+end_src
+
+Favorite ones
+#+begin_src emacs-lisp :tangle no
+(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-zenburn)
+(setq doom-theme 'doom-dracula)
+(setq doom-theme 'doom-snazzy)
+(setq doom-theme 'doom-solarized-light)
+(setq doom-theme 'doom-gruvbox)
+(setq doom-theme 'doom-gruvbox-light)
+(setq doom-theme 'doom-one-light)
+(setq doom-theme 'doom-xcode)
+(setq doom-theme 'doom-monokai-pro)
+#+end_src
+
+** Line numbers
+
+This determines the style of line numbers in effect. If set to ~nil~, line
+numbers are disabled. For relative line numbers, set this to ~relative~.
+
+#+begin_src emacs-lisp
+(setq display-line-numbers-type t)
+#+end_src
+
+** Mac keys swap
+Swap keys behaviour on mac os
+#+begin_src emacs-lisp
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier 'super)
+#+end_src
+
+** Window transparency
+#+begin_src emacs-lisp
+(add-to-list 'default-frame-alist '(alpha . 95))
+#+end_src
+
+* Evil mode
+** Keybindings
+
+Mapping example
+#+begin_src emacs-lisp :tangle no
+(map! :leader
+      (:prefix ("d" . "custom keymap")
+       :desc "Something interesting"
+       "e" #'org-html-export-to-html))
+#+end_src
+
+Moving by visual lines
+#+begin_src emacs-lisp
+(map! :nv "j" #'evil-next-visual-line)
+(map! :nv "k" #'evil-previous-visual-line)
+#+end_src
+
+Better moving on normal and visual mode
+#+begin_src emacs-lisp
+(map! :nv "K" #'evil-backward-paragraph)
+(map! :nv "J" #'evil-forward-paragraph)
+(map! :nv "H" #'evil-first-non-blank)
+(map! :nv "L" #'evil-end-of-line)
+#+end_src
+
+Moving inside the insert mode
+#+begin_src emacs-lisp
+(map! :i "C-k" #'evil-previous-visual-line)
+(map! :i "C-j" #'evil-next-visual-line)
+(map! :i "C-h" #'evil-backward-char)
+(map! :i "C-l" #'evil-forward-char)
+#+end_src
+
+Moving around split windows
+#+begin_src emacs-lisp
+(map! :n "C-k" #'evil-window-up)
+(map! :n "C-j" #'evil-window-down)
+(map! :n "C-h" #'evil-window-left)
+(map! :n "C-l" #'evil-window-right)
+#+end_src
+
+Resizing split windows
+#+begin_src emacs-lisp
+(map! :n "C-S-k" #'evil-window-increase-height)
+(map! :n "C-S-j" #'evil-window-decrease-height)
+(map! :n "C-S-h" #'evil-window-decrease-width)
+(map! :n "C-S-l" #'evil-window-increase-width)
+#+end_src
+
+Commenting lines
+#+begin_src emacs-lisp
+(map! :nvi "C-/" #'evilnc-comment-or-uncomment-lines)
+#+end_src
+
+Ctrl-V as paste in insert mode
+#+begin_src emacs-lisp
+(map! :vi "C-v" #'evil-paste-after)
+#+end_src
+
+** Multiple pasting
+
+Paste the same text multiple times in visual mode
+https://discourse.doomemacs.org/t/fixing-vi-paste-for-us-plebs/2779
+#+begin_src emacs-lisp
+(setq evil-kill-on-visual-paste nil)
+#+end_src
+* Russian keyboard integration
+** Xkbswitch
+Better russian language integration for Evil mode
+
+#+begin_src emacs-lisp :tangle packages.el
+(package! evil-xkbswitch
+  :recipe (:host github :repo "linktohack/evil-xkbswitch"))
+#+end_src
+
+#+begin_src emacs-lisp
+(after! evil
+  (use-package! evil-xkbswitch
+    :config
+    (setq evil-xkbswitch-set-layout (getenv "XKBSWITCH_SET_LAYOUT")
+          evil-xkbswitch-get-layout (getenv "XKBSWITCH_GET_LAYOUT")
+          evil-xkbswitch--us-method (getenv "XKBSWITCH_US_METHOD"))
+    (evil-xkbswitch-mode t)))
+#+end_src
+
+** Using emacs mappings on non-default keyboard layout
+Overide the parent keymap of ~function-key-map~ for the preferred input method
+to translate input sequences to the default system layout (English), so we can
+use Emacs bindings while the non-default system layout is active.
+
+#+begin_src emacs-lisp :tangle packages.el
+(package! reverse-im
+  :recipe (:host github :repo "a13/reverse-im.el"))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package! char-fold
+  :config
+  (setq char-fold-symmetric t
+        search-default-mode #'char-fold-to-regexp))
+
+(use-package! reverse-im
+  :demand t ; always load it
+  :after char-fold ; but only after `char-fold' is loaded
+  :bind
+  ("M-T" . reverse-im-translate-word) ; fix a word in wrong layout
+  :config
+  (setq reverse-im-char-fold t ; use lax matching
+        reverse-im-read-char-advice-function #'reverse-im-read-char-include
+        reverse-im-input-methods '("russian-computer")) ; translate these methods
+  (reverse-im-mode t)) ; turn the mode on
+#+end_src
+
+* Writeroom
+#+begin_src emacs-lisp
+(add-hook! 'text-mode-hook  'writeroom-mode)
+(add-hook! 'prog-mode-hook  'writeroom-mode)
+(add-hook! 'conf-mode-hook 'writeroom-mode)
+#+end_src
+
+* Org mode
+** Directory
+~org-directory~ must be set before org loads!
+#+begin_src emacs-lisp
+(setq org-directory "~/Notes/Org-base")
+#+end_src
+
+** Tangle
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-auto-tangle)
+#+end_src
+
+#+begin_src emacs-lisp
+(add-hook! 'org-mode-hook 'org-auto-tangle-mode)
+
+(map! :leader
+      :desc "Org babel tangle" "m B" #'org-babel-tangle)
+#+end_src
+
+** Line spacing
+#+begin_src emacs-lisp
+(after! org (setq line-spacing 0.25))
+#+end_src
+
+** Save all buffers
+#+begin_src emacs-lisp
+(after! org
+  (add-hook 'after-save-hook 'org-save-all-org-buffers nil 'local))
+#+end_src
+
+** Code blocks font size
+#+begin_src emacs-lisp
+(after! org
+  (custom-set-faces!
+    '(org-block :height 0.85)
+    '(org-code :height 0.85)))
+#+end_src
+
+** Todo keywords
+#+begin_src emacs-lisp
+(after! org
+  (setq org-todo-keywords        ; This overwrites the default Doom org-todo-keywords
+        '((sequence
+           "TODO(t)"           ; A task that is ready to be tackled
+           "PROJ(p)"           ; A project that contains other tasks
+           "ADV(a)"            ; A daily adventure
+           "SIDE(s)"           ; A daily side quest
+           "|"                 ; The pipe necessary to separate "active" states and "inactive" states
+           "DONE(d)"           ; Task has been completed
+           "HOLD(h)"           ; Task has been postponed
+           "CANCELLED(c)" ))   ; Task has been cancelled
+        ))
+  #+end_src
+
+* Org modern
+** Configuration
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-modern)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package! org-modern
+  :after org
+  :config
+  ;; Enable org-modern globally for all org buffers
+  (global-org-modern-mode)
+
+  ;; Customization options (optional)
+  (setq org-modern-keyword nil             ; Don't style #+KEYWORD
+        org-modern-checkbox nil            ; Don't style checkboxes
+        org-modern-todo nil                ; Don't style checkboxes
+        org-modern-table-vertical 1        ; Table styling
+        org-modern-table-horizontal 0.2    ; Table styling
+        org-modern-block-fringe nil        ; Disable code block borders
+        org-auto-align-tags nil
+        org-tags-column 0
+        org-catch-invisible-edits 'show-and-error
+        org-special-ctrl-a/e t
+        org-insert-heading-respect-content t
+        org-hide-emphasis-markers t
+        org-pretty-entities t
+        org-agenda-tags-column 0
+        org-ellipsis "…"
+        org-modern-list '((43 . "➤")       ; Custom list bullets
+                          (45 . "•"))
+        org-modern-star '("◉" "○" "✸" "✿" "✤" "✜" "◆" "▶")  ; Custom bullets
+        org-modern-hide-stars nil                              ; Show/hide original stars
+        org-modern-fold-stars       ; Folding indicators
+        '(("▶" . "▼") ("▷" . "▽"))))
+        #+end_src
+
+** Org-modern-indent
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-modern-indent
+  :recipe (:host github :repo "jdtsmith/org-modern-indent"))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package! org-modern-indent)
+(add-hook! 'org-mode-hook 'org-modern-indent-mode)
+#+end_src
+
+* Org download
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-download)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package! org-download
+  :after org
+  :config
+  (setq org-download-method 'directory
+        org-download-image-dir "images"
+        org-download-heading-lvl nil
+        org-download-timestamp "%Y%m%d-%H%M%S_"
+        org-image-actual-width nil
+        org-download-screenshot-method
+        (cond ((eq system-type 'darwin) "screencapture -i %s")
+              ((eq system-type 'gnu/linux) "flameshot gui --raw > %s")
+              (t "scrot -s %s")))
+  (map! :map org-mode-map
+        :leader
+        (:prefix ("v" . "paste image")
+         :desc "paste image from clipboard" "c" #'org-download-clipboard
+         :desc "paste screenshot" "s" #'org-download-screenshot
+         :desc "toggle inline images" "t" #'org-toggle-inline-images
+         :desc "open at point" "o" #'org-open-at-point))
+  )
+#+end_src
+
+* Org Roam
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-roam)
+(unpin! org-roam)
+#+end_src
+
+Don't know why there was this package
+And what it actially does
+#+begin_src emacs-lisp :tangle no
+(package! org-web-tools)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package! org-roam
+  :custom
+  (org-roam-directory "~/Notes/RoamNotes/")
+  (org-roam-completion-everywhere t)
+  :config
+  (org-roam-db-autosync-enable))
+#+end_src
+
+#+begin_src emacs-lisp
+(map! :map :default-mode
+      :leader
+      (:prefix ("r" . "org roam")
+       :desc "See backlinks" "l" #'org-roam-buffer-toggle
+       :desc "finalize capture " "c" #'org-capture-finalize
+       :desc "run org roam ui " "u" #'org-roam-ui-open
+       :desc "find node " "f" #'org-roam-node-find
+       :desc "node insert" "i" #'org-roam-node-insert))
+#+end_src
+
+* Org Roam Notes Templates
+#+begin_src emacs-lisp
+(after! org-roam
+  (setq org-roam-dailies-directory "journals/"
+        org-roam-capture-templates '(
+                                     ("r" "Note with resources" plain
+                                      (file "~/Notes/RoamNotes/templates/resource.org")
+                                      :if-new (file+head "%<%Y%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+                                      :unnarrowed t)
+                                     ("d" "Daily note" plain
+                                      (file "~/Notes/RoamNotes/templates/daily.org")
+                                      :if-new (file+head "%<%Y%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+                                      :unnarrowed t)
+                                     )
+        org-roam-dailies-capture-templates '(
+                                             ("d" "default" entry "* %?"
+                                              :target (file+head "%<%Y-%m-%d>.org"
+                                                                 "#+title: %<%Y-%m-%d>\n\n[[roam:Daily note link]]\n")))
+        ))
+#+end_src
+
+* Org Roam Ui
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-roam-ui)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package! websocket
+  :after org-roam)
+
+(use-package! org-roam-ui
+  :after org-roam
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start nil
+        org-roam-ui-browser-function #'my/safari-webapp-open
+        ))
+        #+end_src
+
+Cross-platform Safari/org-roam-ui opener
+#+begin_src emacs-lisp
+(defun my/safari-webapp-open (url &rest _)
+  "Open org-roam-ui - Safari web app on macOS, local binary on Linux."
+  (cond
+   ;; macOS - open existing Safari web app
+   ((eq system-type 'darwin)
+    (start-process "safari-webapp" nil
+                   "open" "-a" "ORUI"))  ; Replace with your web app name
+
+   ;; Linux - run local org-roam-ui binary
+   ((eq system-type 'gnu/linux)
+    (let ((roam-ui-bin (expand-file-name "~/.local/bin/org-roam-ui")))
+      (if (file-exists-p roam-ui-bin)
+          (start-process "org-roam-ui" nil roam-ui-bin)
+        (message "org-roam-ui binary not found at %s" roam-ui-bin))))
+
+   ;; Fallback for other systems
+   (t (browse-url url))))
+#+end_src
+* Org Excalidraw
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-yt
+  :recipe (:host github :repo "TobiasZawada/org-yt"))
+(package! org-excalidraw
+  :recipe (:host github :repo "andrewpeck/org-excalidraw"))
+#+end_src
+
+#+begin_src emacs-lisp
+(after! org-roam
+  (defun my/org-roam-buffer-setup ()
+    "Setup function for org-roam buffers."
+    (when (and (derived-mode-p 'org-mode) (org-roam-file-p))
+      (message "Setting up org-roam buffer")
+      (org-excalidraw-initialize)
+      ))
+
+  (add-hook! 'org-mode-hook #'my/org-roam-buffer-setup))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package! org-yt)
+(use-package! org-excalidraw
+  :after org-yt
+  :config
+  (setq org-excalidraw-directory (concat org-roam-directory "drawings")
+        org-excalidraw-base "{\n    \"type\": \"excalidraw\",\n    \"version\": 2,\n    \"source\": \"https://excalidraw.com\",\n    \"elements\": [],\n    \"appState\": {\n      \"gridSize\": null,\n      \"viewBackgroundColor\": \"#cfd4de\"\n    },\n    \"files\": {}\n  }\n"
+        )
+  )
+(add-hook 'org-roam-mode-hook 'org-excalidraw-initialize)
+#+end_src
+
+* File searching
+#+begin_src emacs-lisp
+(after! projectile
+  (map! :leader
+        :desc "Find project file"
+        "f f" #'projectile-find-file))
+
+(map! :leader "f F" #'find-file)
+
+(map! :leader
+      :desc "Search with rg for files in current project"
+      "f g" #'consult-ripgrep)
+
+(map! :leader
+      "/" #'consult-ripgrep)
+
+(after! consult
+  (consult-customize consult-ripgrep
+                     :preview-key '(:debounce 0.2 any)))
+
+(defun my/search-project-at-point ()
+  (interactive)
+  (consult-ripgrep (projectile-project-root) (thing-at-point 'symbol t)))
+
+(map! :leader
+      :desc "Grep project for symbol at point"
+      "*" #'my/search-project-at-point)
+
+#+end_src
+
+* Markdown
+#+begin_src emacs-lisp
+(custom-set-faces
+ '(markdown-header-face ((t (:inherit font-lock-function-name-face :weight bold :family "variable-pitch"))))
+ '(markdown-header-face-1 ((t (:inherit markdown-header-face :height 1.7))))
+ '(markdown-header-face-2 ((t (:inherit markdown-header-face :height 1.6))))
+ '(markdown-header-face-3 ((t (:inherit markdown-header-face :height 1.5))))
+ '(markdown-header-face-4 ((t (:inherit markdown-header-face :height 1.4))))
+ '(markdown-header-face-5 ((t (:inherit markdown-header-face :height 1.3))))
+ '(markdown-header-face-6 ((t (:inherit markdown-header-face :height 1.2)))))
+#+end_src
+* Latex
+
+Set ~xelatex~ as the default latex compiler
+#+begin_src emacs-lisp
+(setq TeX-engine 'xetex)
+(setq TeX-PDF-mode t)
+(setq pdf-latex-command "xelatex")
+#+end_src
+* Dired
+** Packages
+#+begin_src emacs-lisp :tangle packages.el
+(package! dired-single)
+(package! dired-subtree)
+#+end_src
+
+** Moving to trash
+Not enabled now
+But if you need, you can omit ~:tangle no~
+#+begin_src emacs-lisp :tangle no
+(setq delete-by-moving-to-trash t)
+(setq trash-directory "~/.trash")
+#+end_src
+
+** How it looks
+How to configure ~ls~ command that Dired uses
+#+begin_src emacs-lisp
+(setq dired-listing-switches
+      "-ahl -v --group-directories-first")
+#+end_src
+
+** Leader bindings
+#+begin_src emacs-lisp
+(map! :leader
+      (:prefix ("d" . "dired")
+       :desc "Open dired" "d" #'dired
+       :desc "Dired jump to current" "j" #'dired-jump)
+      (:after dired
+              (:map dired-mode-map
+               :desc "Dired view file" "d v" #'dired-view-file
+               :desc "Yank file name" "y n" #'dired-copy-filenamecopy-filename-as-kill
+               :desc "Yank file path" "y p" #'my-put-file-name-on-clipboard
+               :desc "Abort changes" "d a" #'wdired-abort-changes)))
+#+end_src
+
+** Custom filename copy function
+Used under ~:leader y p~ binding
+#+begin_src emacs-lisp
+(defun my-put-file-name-on-clipboard ()
+  "Put the current file name on the clipboard"
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                      default-directory
+                    (buffer-file-name))))
+    (when filename
+      (with-temp-buffer
+        (insert filename)
+        (clipboard-kill-region (point-min) (point-max)))
+      (message filename))))
+#+end_src
+
+** Preview
+#+begin_src emacs-lisp :tangle packages.el
+(package! dired-preview)
+#+end_src
+
+Default values for demo purposes
+#+begin_src emacs-lisp
+(setq dired-preview-delay 0)
+(setq dired-preview-max-size (expt 2 20))
+(setq dired-preview-ignored-extensions-regexp
+      (concat "\\."
+              ;; "\\(mkv\\|webm\\|mp4\\|mp3\\|ogg\\|m4a"
+              "\\(mkv\\|webm\\|mp4\\|mp3\\|ogg\\|m4a"
+              "\\|gz\\|zst\\|tar\\|xz\\|rar\\|zip"
+              "\\|iso\\|epub\\|pdf\\)"))
+#+end_src
+
+Enable ~dired-preview-mode~ globally
+#+begin_src emacs-lisp
+(add-hook 'dired-mode-hook 'dired-preview-mode)
+#+end_src
+
+** Keybindings
+#+begin_src emacs-lisp
+(evil-define-key 'normal dired-mode-map
+  (kbd "M-RET") 'dired-display-file
+  (kbd "RET") 'dired-open-file
+  (kbd "h") 'dired-up-directory
+  (kbd "l") 'dired-find-file ; use dired-find-file instead of dired-open.
+
+  (kbd "m") 'dired-mark
+  (kbd "c") 'dired-ranger-copy
+  (kbd "p") 'dired-ranger-paste
+  (kbd "P") 'dired-ranger-move
+  (kbd "t") 'dired-toggle-marks
+  (kbd "u") 'dired-unmark
+  (kbd "C") 'dired-do-compress-to
+  (kbd "d") 'move-file-to-trash
+  (kbd "D") 'dired-do-delete
+  ;; (kbd "J") 'dired-goto-file
+  ;; (kbd "M") 'dired-do-chmod
+  ;; (kbd "O") 'dired-do-chown
+  ;; (kbd "R") 'dired-do-rename
+  ;; (kbd "T") 'dired-do-touch
+  ;; (kbd "Y") 'dired-copy-filenamecopy-filename-as-kill ; copies filename to kill ring.
+  ;; (kbd "Z") 'dired-do-compress
+  ;; (kbd "+") 'dired-create-directory
+  ;; (kbd "-") 'dired-do-kill-lines
+  ;; (kbd "% l") 'dired-downcase
+  ;; (kbd "% m") 'dired-mark-files-regexp
+  ;; (kbd "% u") 'dired-upcase
+  ;; (kbd "* %") 'dired-mark-files-regexp
+  ;; (kbd "* .") 'dired-mark-extension
+  ;; (kbd "* /") 'dired-mark-directories
+  ;; (kbd "; d") 'epa-dired-do-decrypt
+  (kbd "; e") 'epa-dired-do-encrypt)
+#+end_src
+
+** File icons
+Get file icons in dired
+
+#+begin_src emacs-lisp :tangle packages.el
+(package! all-the-icons-dired)
+#+end_src
+
+#+begin_src emacs-lisp
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+#+end_src
+
+** Open extensions
+With dired-open plugin, you can launch external programs for certain extensions
+For example, I set all .png files to open in ~sxiv~ and all .mp4 files to open in ~mpv~
+
+#+begin_src emacs-lisp :tangle packages.el
+(package! dired-open)
+#+end_src
+
+#+begin_src emacs-lisp
+(setq dired-open-extensions
+      (let ((image-viewer (cond ((eq system-type 'darwin) "open")
+                                ((eq system-type 'gnu/linux) "imv")
+                                (t "xdg-open")))
+            (video-player (cond ((eq system-type 'darwin) "open")
+                                (t "mpv")))
+            (audio-player (cond ((eq system-type 'darwin) "open")
+                                (t "mpv"))))
+        `(("gif" . ,image-viewer)
+          ("jpg" . ,image-viewer)
+          ("jpeg" . ,image-viewer)
+          ("png" . ,image-viewer)
+          ("webp" . ,image-viewer)
+          ("mkv" . ,video-player)
+          ("mp4" . ,video-player)
+          ("avi" . ,video-player)
+          ("mov" . ,video-player)
+          ("mp3" . ,audio-player)
+          ("flac" . ,audio-player)
+          ("m4a" . ,audio-player))))
+#+end_src
+
+** Dirvish
+#+begin_src emacs-lisp :tangle packages.el
+(package! dirvish)
+#+end_src
+
+** Ranger
+Not used now
+#+begin_src emacs-lisp :tangle no
+(package! dired-ranger)
+(package! ranger)
+#+end_src
+
