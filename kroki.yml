@@ -1,0 +1,2 @@
+endpoint: 'https://kroki.myaxa.dev'
+timeout: '30s'
