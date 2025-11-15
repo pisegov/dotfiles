@@ -328,8 +328,8 @@ use Emacs bindings while the non-default system layout is active.
 * Writeroom
 #+begin_src emacs-lisp
 (add-hook! 'text-mode-hook  'writeroom-mode)
-(add-hook! 'prog-mode-hook  'writeroom-mode)
-(add-hook! 'conf-mode-hook 'writeroom-mode)
+(setq! writeroom-width 0.6)
+(setq! visual-fill-column-adjust-for-text-scale nil)
 #+end_src
 
 * Org mode
