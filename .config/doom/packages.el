@@ -26,8 +26,14 @@
 
 (package! org-yt
   :recipe (:host github :repo "TobiasZawada/org-yt"))
+;; (package! org-excalidraw
+;;   :recipe (:host github :repo "andrewpeck/org-excalidraw"))
+
 (package! org-excalidraw
-  :recipe (:host github :repo "andrewpeck/org-excalidraw"))
+  :recipe (:local-repo "org-excalidraw"
+           :files ("*.el")))
+
+(package! org-present)
 
 (package! dired-single)
 (package! dired-subtree)

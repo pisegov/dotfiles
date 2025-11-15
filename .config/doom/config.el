@@ -8,7 +8,7 @@
 
 (setq doom-font (font-spec :size 17))
 
-(setq doom-theme 'doom-zenburn)
+(setq doom-theme 'doom-xcode)
 
 (setq display-line-numbers-type t)
 
@@ -241,6 +241,72 @@
         )
   )
 (add-hook 'org-roam-mode-hook 'org-excalidraw-initialize)
+
+(setq visual-fill-column-width 80
+      visual-fill-column-center-text t)
+(defun my/org-present-start ()
+  ;; Center the presentation and wrap lines
+  (visual-fill-column-mode 1)
+  (visual-line-mode 1)
+;; Tweak font sizes
+
+    ;; (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
+    ;;                                 (header-line (:height 4.0) variable-pitch)
+    ;;                                 (org-document-title (:height 1.75) org-document-title)
+    ;;                                 ;; (org-code (:height 1.55) org-code)
+    ;;                                 ;; (org-verbatim (:height 1.55) org-verbatim)
+    ;;                                 (org-block (:height 1.25) org-block)
+    ;;                                 ;; (org-block-begin-line (:height 0.7) org-block)))
+    (setq-local face-remapping-alist '((default (:height 1.75) variable-pitch)
+                                    (header-line (:height 4.0) variable-pitch)
+                                    (org-link (:underline nil) org-link)
+                                    (org-document-title (:height 1.75) org-document-title)
+                                    (org-code (:height 1.0) org-code)
+                                    ;; (org-verbatim (:height 1.55) org-verbatim)
+                                    (org-block (:height 1.05) org-block)
+                                    (org-block-begin-line (:height 0.7) org-block)))
+(setq header-line-format " ")
+(menu-bar--display-line-numbers-mode-none)
+(org-modern-indent-mode 0)
+
+;; (dolist (face '((org-level-1 . 1.2)
+;;                 (org-level-2 . 1.1)
+;;                 (org-level-3 . 1.05)
+;;                 (org-level-4 . 1.0)
+;;                 (org-level-5 . 1.1)
+;;                 (org-level-6 . 1.1)
+;;                 (org-level-7 . 1.1)
+;;                 (org-level-8 . 1.1)))
+;;   (set-face-attribute (car face) nil :font "Iosevka Aile" :weight 'medium :height (cdr face)))
+
+  )
+
+(defun my/org-present-end ()
+  ;; Stop centering the document
+  (visual-fill-column-mode 0)
+  (visual-line-mode 0)
+;; Reset font customizations
+(setq-local face-remapping-alist '((default variable-pitch default)))
+(setq header-line-format nil)
+(menu-bar--display-line-numbers-mode-visual)
+(org-modern-indent-mode 1)
+  )
+
+;; Register hooks with org-present
+(add-hook 'org-present-mode-hook 'my/org-present-start)
+(add-hook 'org-present-mode-quit-hook 'my/org-present-end)
+
+(defun my/org-present-prepare-slide (buffer-name heading)
+  ;; Show only top-level headlines
+  (org-overview)
+
+  ;; Unfold the current entry
+  (org-show-entry)
+
+  ;; Show only direct subheadings of the slide but don't expand them
+  (org-show-children))
+
+(add-hook 'org-present-after-navigate-functions 'my/org-present-prepare-slide)
 
 (after! projectile
   (map! :leader
