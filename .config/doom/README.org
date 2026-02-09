@@ -433,7 +433,55 @@ use Emacs bindings while the non-default system layout is active.
 (use-package! org-modern-indent)
 (add-hook! 'org-mode-hook 'org-modern-indent-mode)
 #+end_src
+* Org appear
+** Configuration
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-appear)
+#+end_src
 
+#+begin_src emacs-lisp
+(use-package! org-appear
+:after org
+:config
+(setq org-appear-autoemphasis t
+      org-appear-autosubmarkers t
+      org-appear-autolinks t
+      org-appear-trigger 'manual))
+
+(add-hook! 'org-mode-hook 'org-appear-mode)
+(setq org-appear-trigger 'manual)
+(add-hook 'org-mode-hook (lambda ()
+                           (add-hook 'evil-insert-state-entry-hook
+                                     #'org-appear-manual-start
+                                     nil
+                                     t)
+                           (add-hook 'evil-insert-state-exit-hook
+                                     #'org-appear-manual-stop
+                                     nil
+                                     t)))
+#+end_src
+** Manual trigger
+#+begin_src emacs-lisp
+(defvar-local my/org-appear-manual-on nil)
+
+(defun my/org-appear-toggle-manual ()
+  (interactive)
+  (if my/org-appear-manual-on
+      (progn
+        (org-appear-manual-stop)
+        (setq my/org-appear-manual-on nil)
+        (message "org-appear: OFF"))
+    (org-appear-manual-start)
+    (setq my/org-appear-manual-on t)
+    (message "org-appear: ON")))
+
+;; Doom keybind (пример):
+(map! :after org
+      :map org-mode-map
+      :leader
+      :desc "Toggle org-appear (manual)"
+      "t a" #'my/org-appear-toggle-manual)
+#+end_src
 * Org download
 #+begin_src emacs-lisp :tangle packages.el
 (package! org-download)
