@@ -1,3 +1,6 @@
 shell-integration-features = ssh-terminfo,ssh-env
-background-opacity = 0.9
-font-size=20
+font-size = 20
+copy-on-select = false
+confirm-close-surface = false
+command = zsh -c tmux-smart-attach 
+theme = dark:IlyasYOY Monochrome Dark,light:IlyasYOY Monochrome Light

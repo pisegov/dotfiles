@@ -23,23 +23,11 @@ background = "#222222"
 foreground = "#F9F9F9"
 
 [font]
-size = 15.0
-
-[font.bold]
-family = "hack"
-style = "Bold"
-
-[font.bold_italic]
-family = "monospace"
-style = "Bold Italic"
-
-[font.italic]
-family = "hack"
-style = "Italic"
-
-[font.normal]
-family = "hack"
-style = "Regular"
+size = 17.0
+normal.family = "Hack Nerd Font"
+bold.family = "Hack Nerd Font"
+italic.family = "Hack Nerd Font"
+bold_italic.family = "Hack Nerd Font"
 
 [[keyboard.bindings]]
 action = "ToggleFullscreen"
