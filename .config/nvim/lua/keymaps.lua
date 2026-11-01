@@ -15,6 +15,9 @@ map("n", "<C-Down>", ":resize -2<CR>")
 map("n", "<C-Left>", ":vertical resize -2<CR>")
 map("n", "<C-Right>", ":vertical resize +2<CR>")
 
+ -- do noh on escape
+map("n", "<Esc>", "<cmd>nohlsearch<CR><Esc>")
+
 -- Visual --
 -- Stay in indent mode
 map("v", "<", "<gv")
@@ -61,14 +64,6 @@ map('v', 'Д', '$')
 
 
 -- map('n', '<C-x>', ':bp<Bar>bd #<Cr>')
-
-map('i', '<C-k>', '<Up>')
-map('i', '<C-j>', '<Down>')
-map('i', '<C-h>', '<Left>')
-map('i', '<C-l>', '<Right>')
-
-map('n', '<C-c>', '"*y')
-map('i', '<C-c>', '"*y')
 
 map('i', 'jk', '<esc>')
 

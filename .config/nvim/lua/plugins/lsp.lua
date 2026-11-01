@@ -23,4 +23,10 @@ require("lspconfig").ltex.setup {
     }
 }
 
-require("lspconfig").kotlin_language_server.setup {}
+vim.lsp.config("kotlin_lsp", {
+    cmd = { "kotlin-lsp", "--stdio" },
+    single_file_support = false,
+    on_attach = require("lsp-format").on_attach,
+})
+
+vim.lsp.enable("kotlin_lsp")

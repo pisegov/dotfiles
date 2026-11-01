@@ -45,6 +45,19 @@ require("lazy").setup({
 
     "navarasu/onedark.nvim",
     {
+        "f-person/auto-dark-mode.nvim",
+        opts = {
+            set_dark_mode = function()
+                vim.o.background = "dark"
+                vim.cmd("colorscheme monochrome")
+            end,
+            set_light_mode = function()
+                vim.o.background = "light"
+                vim.cmd("colorscheme monochrome")
+            end,
+        },
+    },
+    {
         "folke/which-key.nvim",
         event = "VeryLazy",
         opts = {
@@ -117,5 +130,23 @@ require("lazy").setup({
         config = function()
             require('kitty-scrollback').setup()
         end,
+    },
+    {
+      "christoomey/vim-tmux-navigator",
+      cmd = {
+        "TmuxNavigateLeft",
+        "TmuxNavigateDown",
+        "TmuxNavigateUp",
+        "TmuxNavigateRight",
+        "TmuxNavigatePrevious",
+        "TmuxNavigatorProcessList",
+      },
+      keys = {
+        { "<c-h>", "<cmd><C-U>TmuxNavigateLeft<cr>" },
+        { "<c-j>", "<cmd><C-U>TmuxNavigateDown<cr>" },
+        { "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
+        { "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
+        { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
+      },
     }
 })

@@ -1,7 +1,7 @@
 require('keymaps')
 require('options')
 require('plugins.lazy')
-require('plugins.onedark')
+require('plugins.monochrome')
 require('plugins.lualine')
 require('plugins.mason')
 require('plugins.treesitter')
