@@ -1,2 +1,6 @@
 **/__pycache__/
 .config/nvim/lazy-lock.json
+
+# Yazi packages are restored with `ya pkg install`.
+/.config/yazi/plugins/
+/.config/yazi/flavors/

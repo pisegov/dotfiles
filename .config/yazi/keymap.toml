@@ -1,8 +1,8 @@
 # A TOML linter such as https://taplo.tamasfe.dev/ can use this schema to validate your config.
 # If you encounter any issues, please make an issue at https://github.com/yazi-rs/schemas.
-"$schema" = "https://yazi-rs.github.io/schemas/keymap.json"
+# "$schema" = "https://yazi-rs.github.io/schemas/keymap.json"
 
-[manager]
+[mgr]
 
 keymap = [
 	{ on = [ "<Esc>" ], run = "escape",             desc = "Exit visual mode, clear selected, or cancel search" },
@@ -51,10 +51,10 @@ keymap = [
 	{ on = [ "G" ],      run = "arrow 99999999",  desc = "Move cursor to the bottom" },
 
 	# Selection
-	{ on = [ "<Space>" ], run = [ "select --state=none", "arrow 1" ], desc = "Toggle the current selection state" },
-	{ on = [ "m" ], run = [ "select --state=true", "arrow 1" ], desc = "Toggle the current selection state" },
-	{ on = [ "u" ], run = [ "select --state=false", "arrow 1" ], desc = "Toggle the current selection state" },
-	{ on = [ "t" ],   run = "select_all --state=none",            desc = "Inverse selection of all files" },
+	{ on = [ "<Space>" ], run = [ "toggle", "arrow 1" ], desc = "Toggle the current selection state" },
+	{ on = [ "m" ], run = [ "toggle --state=on", "arrow 1" ], desc = "Toggle the current selection state" },
+	{ on = [ "u" ], run = [ "toggle --state=off", "arrow 1" ], desc = "Toggle the current selection state" },
+	{ on = [ "t" ],   run = "toggle_all",            desc = "Inverse selection of all files" },
 	{ on = [ "v" ],       run = "visual_mode",                        desc = "Enter visual mode (selection mode)" },
 	{ on = [ "V" ],       run = "visual_mode --unset",                desc = "Enter visual mode (unset mode)" },
 	# { on = [ "<C-a>" ],   run = "select_all --state=true",            desc = "Select all files" },
@@ -108,10 +108,10 @@ keymap = [
 	{ on = [ "N" ], run = "find_arrow --previous",   desc = "Go to previous found file" },
 
 	# Sorting
-	{ on = [ ",", "m" ], run = "sort modified --dir-first",               desc = "Sort by modified time" },
-	{ on = [ ",", "M" ], run = "sort modified --reverse --dir-first",     desc = "Sort by modified time (reverse)" },
-	{ on = [ ",", "c" ], run = "sort created --dir-first",                desc = "Sort by created time" },
-	{ on = [ ",", "C" ], run = "sort created --reverse --dir-first",      desc = "Sort by created time (reverse)" },
+	{ on = [ ",", "m" ], run = "sort mtime --dir-first",               desc = "Sort by modified time" },
+	{ on = [ ",", "M" ], run = "sort mtime --reverse --dir-first",     desc = "Sort by modified time (reverse)" },
+	{ on = [ ",", "b" ], run = "sort btime --dir-first",                desc = "Sort by created time" },
+	{ on = [ ",", "B" ], run = "sort btime --reverse --dir-first",      desc = "Sort by created time (reverse)" },
 	{ on = [ ",", "e" ], run = "sort extension --dir-first",         	   desc = "Sort by extension" },
 	{ on = [ ",", "E" ], run = "sort extension --reverse --dir-first",    desc = "Sort by extension (reverse)" },
 	{ on = [ ",", "a" ], run = "sort alphabetical --dir-first",           desc = "Sort alphabetically" },
@@ -158,19 +158,19 @@ keymap = [
 	{ on = [ "~" ], run = "help", desc = "Open help" },
 ]
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on   = [ "<C-s>" ]
 run = 'shell "$SHELL" --block --confirm'
 desc = "Open shell here"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on   = [ "l" ]
-run = "plugin --sync smart-enter"
+run = "plugin smart-enter"
 desc = "Enter the child directory, or open the file"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on   = [ "<Enter>" ]
-run = "plugin --sync smart-enter"
+run = "plugin smart-enter"
 desc = "Enter the child directory, or open the file"
 
 [tasks]
