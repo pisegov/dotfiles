@@ -14,16 +14,16 @@ FONT="SF Pro" # Needs to have Regular, Bold, Semibold, Heavy and Black variants
 # If you are looking for other colors, see the color picker:
 # https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
 bar=(
-  height=32
+  height=37
   color=$BAR_COLOR
   shadow=on
   position=top
   sticky=on
   padding_right=10
   padding_left=10
-  corner_radius=9
-  y_offset=10
-  margin=10
+  corner_radius=0
+  y_offset=0
+  margin=0
   blur_radius=20
   notch_width=0
 )
@@ -57,9 +57,9 @@ sketchybar --default "${default[@]}"
 source "$ITEM_DIR/aerospace.sh"
 
 # Center
-source "$ITEM_DIR/calendar.sh"
 
 # -- Right Side Items
+source "$ITEM_DIR/calendar.sh"
 source "$ITEM_DIR/volume.sh"
 source "$ITEM_DIR/battery.sh"
 source "$ITEM_DIR/vpn.sh"
