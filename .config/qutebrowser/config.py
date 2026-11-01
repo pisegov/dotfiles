@@ -1,0 +1,5 @@
+c.fonts.tabs.selected = "14pt Sans"
+c.fonts.tabs.unselected = "14pt Sans"
+c.fonts.statusbar = "14pt Sans"
+c.fonts.completion.entry = "14pt Sans"
+c.fonts.completion.category = "14pt Sans"
