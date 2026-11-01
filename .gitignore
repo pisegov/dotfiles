@@ -4,3 +4,6 @@
 # Yazi packages are restored with `ya pkg install`.
 /.config/yazi/plugins/
 /.config/yazi/flavors/
+
+# TPM installs plugin repositories on the first tmux launch.
+/.config/tmux/plugins/
