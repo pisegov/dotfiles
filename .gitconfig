@@ -1,11 +1,15 @@
 [user]
-	name = Mikhail Pisegov
+	name = pisegov-m
+	email = pisegov-m@yandex-team.ru
 [color]
 	pager = no
 [core]
 	pager = bat
 [push]
 	autoSetupRemote = true
+[advice]
+    skippedCherryPicks = false
 [alias]
 	reset-last = reset HEAD~1
-	temp = "commit -am 'work in progress'"
+	temp = "commit -am 'work in progress' --no-verify"
+    s = status
