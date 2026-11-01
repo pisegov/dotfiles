@@ -4,11 +4,14 @@
 )
 
 (defcfg
+    process-unmapped-keys yes
     macos-dev-names-include ("Apple Internal Keyboard / Trackpad")
 )
 
 (defsrc
-  caps q w e r u i o p
+  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10   f11   f12
+  caps a s d f j k l ;
+  fn
 )
 
 (defalias
@@ -16,19 +19,30 @@
     ;; because i don't need to input multiple escapes when i tap + release + tap again
   escctrl (tap-hold-press $ht $ht esc lctrl)
 
-  e (tap-hold-release $tt $ht e lalt)
-  i (tap-hold-release $tt $ht i ralt)
+  d (tap-hold-release $tt $ht d lalt)
+  k (tap-hold-release $tt $ht k ralt)
 
-  w (tap-hold-release $tt $ht w lctrl)
-  o (tap-hold-release $tt $ht o rctrl)
+  s (tap-hold-release $tt $ht s lctrl)
+  l (tap-hold-release $tt $ht l rctrl)
 
-  q (tap-hold-release $tt $ht q lmet)
-  p (tap-hold-release $tt $ht p rmet)
+  a (tap-hold-release $tt $ht a lmet)
+  ; (tap-hold-release $tt $ht ; rmet)
 
-  r (tap-hold-release $tt $ht r lsft)
-  u (tap-hold-release $tt $ht u rsft)
+  f (tap-hold-release $tt $ht f lsft)
+  j (tap-hold-release $tt $ht j rsft)
+
+  fnl (tap-hold 200 200 fn (layer-toggle fn))
 )
 
 (deflayer base
-    @escctrl @q @w @e @r  @u @i @o @p
+    brdn brup _ _ _ _ prev pp next mute vold volu
+    @escctrl @a @s @d @f  @j @k @l @;
+    @fnl
+)
+
+
+(deflayer fn
+    f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12
+    @escctrl _ _ _ _ _ _ _ _
+    fn
 )
