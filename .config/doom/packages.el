@@ -17,6 +17,8 @@
 (package! org-modern-indent
   :recipe (:host github :repo "jdtsmith/org-modern-indent"))
 
+(package! org-appear)
+
 (package! org-download)
 
 (package! org-roam)
@@ -26,12 +28,12 @@
 
 (package! org-yt
   :recipe (:host github :repo "TobiasZawada/org-yt"))
-;; (package! org-excalidraw
-;;   :recipe (:host github :repo "andrewpeck/org-excalidraw"))
-
 (package! org-excalidraw
-  :recipe (:local-repo "org-excalidraw"
-           :files ("*.el")))
+  :recipe (:host github :repo "andrewpeck/org-excalidraw"))
+
+;; (package! org-excalidraw
+;;   :recipe (:local-repo "org-excalidraw"
+;;            :files ("*.el")))
 
 (package! org-present)
 

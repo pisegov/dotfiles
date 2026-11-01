@@ -6,16 +6,26 @@
 (setq user-full-name "Mikhail Pisegov"
       user-mail-address "pisegov.mikhail@gmail.com")
 
+(setq doom-font (font-spec :family "Fira Mono" :size 12 :weight 'semi-light))
+
 (setq doom-font (font-spec :size 17))
 
-(setq doom-theme 'doom-xcode)
+(setq doom-theme 'doom-plain-dark)
+
+(setq doom-theme nil) ; отключить статическую тему
+
+(defun my/apply-theme (appearance)
+(mapc #'disable-theme custom-enabled-themes)
+(pcase appearance
+    ('light (load-theme 'doom-monochrome-light t))
+    ('dark  (load-theme 'doom-monochrome-dark t))))
+
+(add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
 
 (setq display-line-numbers-type t)
 
 (setq mac-command-modifier 'meta)
 (setq mac-option-modifier 'super)
-
-(add-to-list 'default-frame-alist '(alpha . 95))
 
 (map! :nv "j" #'evil-next-visual-line)
 (map! :nv "k" #'evil-previous-visual-line)
@@ -71,8 +81,64 @@
   (reverse-im-mode t)) ; turn the mode on
 
 (add-hook! 'text-mode-hook  'writeroom-mode)
-(add-hook! 'prog-mode-hook  'writeroom-mode)
-(add-hook! 'conf-mode-hook 'writeroom-mode)
+(setq! writeroom-width 90)
+(setq! visual-fill-column-adjust-for-text-scale nil)
+
+(after! yaml-mode
+  (setq yaml-indent-offset 4))
+
+(defun my/kotlin-lsp-server-start-fun (port)
+  (let ((program (executable-find "kotlin-lsp")))
+    (unless program
+      (user-error "kotlin-lsp is not on Emacs exec-path"))
+    (list program "--socket" (number-to-string port))))
+
+(after! lsp-mode
+  (add-to-list 'lsp-language-id-configuration
+               '(kotlin-mode . "kotlin"))
+  (add-to-list 'lsp-disabled-clients 'kotlin-ls)
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection
+    (lsp-tcp-connection #'my/kotlin-lsp-server-start-fun)
+    :activation-fn (lsp-activate-on "kotlin")
+    :major-modes '(kotlin-mode)
+    :priority -1
+    :server-id 'kotlin-jb-lsp)))
+
+(defun my/kotlin-ktlint-error-level (orig error)
+  "Display Ktlint standard rules as warnings in Kotlin buffers."
+  (let ((level (funcall orig error))
+        (id (flycheck-error-id error))
+        (buffer (flycheck-error-buffer error)))
+    (if (and (eq level 'error)
+             (stringp id)
+             (string-prefix-p "standard:" id)
+             (buffer-live-p buffer)
+             (with-current-buffer buffer
+               (derived-mode-p 'kotlin-mode 'kotlin-ts-mode)))
+        'warning
+      level)))
+
+(after! flycheck
+  (advice-add 'flycheck-error-level :around #'my/kotlin-ktlint-error-level))
+
+(defun my/replace-double-hyphen-with-emdash (&optional beg end)
+  "Replace ` -- ` with ` — ` in the active region or the whole buffer."
+  (interactive
+   (when (use-region-p)
+     (list (region-beginning) (region-end))))
+  (save-excursion
+    (save-restriction
+      (when (and beg end)
+        (narrow-to-region beg end))
+      (goto-char (point-min))
+      (while (search-forward " -- " nil t)
+        (replace-match " — " t t)))))
+
+(map! :leader
+      :desc "Replace — with em dash"
+      "-" #'my/replace-double-hyphen-with-emdash)
 
 (setq org-directory "~/Notes/Org-base")
 
@@ -135,6 +201,46 @@
 
 (use-package! org-modern-indent)
 (add-hook! 'org-mode-hook 'org-modern-indent-mode)
+
+(use-package! org-appear
+:after org
+:config
+(setq org-appear-autoemphasis t
+      org-appear-autosubmarkers t
+      org-appear-autolinks t
+      org-appear-trigger 'manual))
+
+(add-hook! 'org-mode-hook 'org-appear-mode)
+(setq org-appear-trigger 'manual)
+(add-hook 'org-mode-hook (lambda ()
+                           (add-hook 'evil-insert-state-entry-hook
+                                     #'org-appear-manual-start
+                                     nil
+                                     t)
+                           (add-hook 'evil-insert-state-exit-hook
+                                     #'org-appear-manual-stop
+                                     nil
+                                     t)))
+
+(defvar-local my/org-appear-manual-on nil)
+
+(defun my/org-appear-toggle-manual ()
+  (interactive)
+  (if my/org-appear-manual-on
+      (progn
+        (org-appear-manual-stop)
+        (setq my/org-appear-manual-on nil)
+        (message "org-appear: OFF"))
+    (org-appear-manual-start)
+    (setq my/org-appear-manual-on t)
+    (message "org-appear: ON")))
+
+;; Doom keybind (пример):
+(map! :after org
+      :map org-mode-map
+      :leader
+      :desc "Toggle org-appear (manual)"
+      "t a" #'my/org-appear-toggle-manual)
 
 (use-package! org-download
   :after org
@@ -242,12 +348,12 @@
   )
 (add-hook 'org-roam-mode-hook 'org-excalidraw-initialize)
 
-(setq visual-fill-column-width 80
-      visual-fill-column-center-text t)
+(setq org-present-text-scale 2)
+(visual-fill-column-mode 1)
+(visual-line-mode 1)
+
 (defun my/org-present-start ()
   ;; Center the presentation and wrap lines
-  (visual-fill-column-mode 1)
-  (visual-line-mode 1)
 ;; Tweak font sizes
 
     ;; (setq-local face-remapping-alist '((default (:height 1.5) variable-pitch)
@@ -259,16 +365,22 @@
     ;;                                 ;; (org-block-begin-line (:height 0.7) org-block)))
     (setq-local face-remapping-alist '((default (:height 1.75) variable-pitch)
                                     (header-line (:height 4.0) variable-pitch)
-                                    (org-link (:underline nil) org-link)
+                                    (org-link (
+                                               :foreground nil
+                                               :background nil
+                                               :underline nil
+                                               ) org-link)
                                     (org-document-title (:height 1.75) org-document-title)
                                     (org-code (:height 1.0) org-code)
                                     ;; (org-verbatim (:height 1.55) org-verbatim)
                                     (org-block (:height 1.05) org-block)
                                     (org-block-begin-line (:height 0.7) org-block)))
 (setq header-line-format " ")
+;; (setq org-highlight-links nil)
 (menu-bar--display-line-numbers-mode-none)
 (org-modern-indent-mode 0)
-
+(org-present-toggle-cursor)
+(org-present-big)
 ;; (dolist (face '((org-level-1 . 1.2)
 ;;                 (org-level-2 . 1.1)
 ;;                 (org-level-3 . 1.05)
@@ -281,19 +393,18 @@
 
   )
 
-(defun my/org-present-end ()
-  ;; Stop centering the document
-  (visual-fill-column-mode 0)
-  (visual-line-mode 0)
-;; Reset font customizations
-(setq-local face-remapping-alist '((default variable-pitch default)))
-(setq header-line-format nil)
-(menu-bar--display-line-numbers-mode-visual)
-(org-modern-indent-mode 1)
-  )
-
 ;; Register hooks with org-present
 (add-hook 'org-present-mode-hook 'my/org-present-start)
+
+(defun my/org-present-end ()
+    ;; Reset font customizations
+    (setq-local face-remapping-alist '((default variable-pitch default)))
+    (setq header-line-format nil)
+    (menu-bar--display-line-numbers-mode-visual)
+    (org-modern-indent-mode 1)
+    (org-present-show-cursor)
+    (org-present-small))
+
 (add-hook 'org-present-mode-quit-hook 'my/org-present-end)
 
 (defun my/org-present-prepare-slide (buffer-name heading)
@@ -304,9 +415,93 @@
   (org-show-entry)
 
   ;; Show only direct subheadings of the slide but don't expand them
-  (org-show-children))
+  (org-show-children)
+  (org-cycle-hide-drawers 'all))
 
 (add-hook 'org-present-after-navigate-functions 'my/org-present-prepare-slide)
+
+(defun org-present-toggle-cursor ()
+  "Toggle cursor visibility in org-present."
+  (interactive)
+  (if cursor-type
+      (org-present-hide-cursor)
+    (org-present-show-cursor)))
+
+
+(map! :leader
+       :desc "Toggle cursor"
+       "t c" #'org-present-toggle-cursor)
+
+(defun my/org-present--goto-level-1-heading ()
+  "Go to the level-1 heading that defines current slide."
+  (org-back-to-heading t)
+  (while (> (org-outline-level) 1)
+    (org-up-heading-safe)))
+
+(defun my/org-present-goto-slide-beginning ()
+  "Go to the beginning of the current level-1 slide."
+  (interactive)
+  (my/org-present--goto-level-1-heading)
+  (org-show-entry)
+  (beginning-of-line))
+
+(defun my/org-present-goto-slide-end ()
+  "Go to the end of the current level-1 slide."
+  (interactive)
+  (my/org-present--goto-level-1-heading)
+  (let ((end (save-excursion
+               (forward-line 1)
+               (if (re-search-forward "^\\* " nil t) ; следующий слайд (только 1 уровень)
+                   (progn
+                     (forward-line -1)
+                     (end-of-line)
+                     (point))
+                 (goto-char (point-max))
+                 (skip-chars-backward " \n\t")
+                 (end-of-line)
+                 (point)))))
+    (goto-char end)))
+
+(after! org-present
+  (map! :map org-present-mode-keymap
+        :n "gg" #'my/org-present-goto-slide-beginning
+        :n "G" #'my/org-present-goto-slide-end))
+
+(defun org-cycle-hide-drawers (state)
+  "Re-hide all drawers after a visibility state change."
+  (when (and (derived-mode-p 'org-mode)
+             (not (memq state '(overview folded contents))))
+    (save-excursion
+      (let* ((globalp (memq state '(contents all)))
+             (beg (if globalp
+                    (point-min)
+                    (point)))
+             (end (if globalp
+                    (point-max)
+                    (if (eq state 'children)
+                      (save-excursion
+                        (outline-next-heading)
+                        (point))
+                      (org-end-of-subtree t)))))
+        (goto-char beg)
+        (while (re-search-forward org-drawer-regexp end t)
+          (save-excursion
+            (beginning-of-line 1)
+            (when (looking-at org-drawer-regexp)
+              (let* ((start (1- (match-beginning 0)))
+                     (limit
+                       (save-excursion
+                         (outline-next-heading)
+                           (point)))
+                     (msg (format
+                            (concat
+                              "org-cycle-hide-drawers:  "
+                              "`:END:`"
+                              " line missing at position %s")
+                            (1+ start))))
+                (if (re-search-forward "^[ \t]*:END:" limit t)
+                  (outline-flag-region start (point-at-eol) t)
+                  (user-error msg))))))))))
 
 (after! projectile
   (map! :leader
