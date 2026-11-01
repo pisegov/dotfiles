@@ -81,11 +81,18 @@ require("lazy").setup({
 
     { -- Highlight, edit, and navigate code
         'nvim-treesitter/nvim-treesitter',
-        build = function()
-            pcall(require('nvim-treesitter.install').update { with_sync = true })
-        end,
+        branch = 'main',
+        lazy = false,
+        build = ':TSUpdate',
         dependencies = {
-            'nvim-treesitter/nvim-treesitter-textobjects',
+            {
+                'nvim-treesitter/nvim-treesitter-textobjects',
+                branch = 'main',
+                lazy = false,
+                init = function()
+                    vim.g.no_plugin_maps = true
+                end,
+            },
         }
     },
 
