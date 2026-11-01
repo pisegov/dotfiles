@@ -26,18 +26,10 @@ map <leader>d <Action>(Debug)
 
 " Find more examples here: https://jb.gg/share-ideavimrc
 
-set langmap=ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯ;ABCDEFGHIJKLMNOPQRSTUVWXYZ,фисвуапршолдьтщзйкыегмцчня;abcdefghijklmnopqrstuvwxyz
-set tabstop=4
-set shiftwidth=4
-set smarttab
-set showmatch
 set hlsearch
 set incsearch
 set ignorecase
 set number 
-set autoindent
-set mouse=a
-set softtabstop=4
 
 noremap K     {
 noremap J     }
@@ -55,21 +47,21 @@ inoremap <C-j> <Down>
 inoremap <C-h> <Left>
 inoremap <C-l> <Right>
 
-vnoremap gU :action EditorToggleCase<cr><Esc>
-vnoremap gu :action EditorToggleCase<cr><Esc>
 vnoremap P  "0p
 
-set ideajoin
 set clipboard+=unnamed
 nnoremap <Space> :action LeaderAction<cr>
-" nnoremap <Space> :action TransparentLeaderAction<cr>
 vnoremap <Space> :action LeaderAction<cr>
 
-Plug 'preservim/nerdtree'
-set sneak
+" Clear highlighting on escape in normal mode
+nnoremap <silent> <Esc> :nohlsearch<CR><Esc>
 
-set keep-english-in-normal-and-restore-in-insert 
-let keep_input_source_in_insert=RussianWin
+Plug 'preservim/nerdtree'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-surround'
+Plug 'justinmk/vim-sneak'
+set anyobject
+set ideajoin
 
 map й q
 map ц w
