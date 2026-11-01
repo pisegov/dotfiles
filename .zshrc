@@ -18,7 +18,7 @@ set -o vi
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="powerlevel10k/powerlevel10k"
+ZSH_THEME="powerlevel10k/powerlevel10k" # set by `omz`
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -88,6 +88,7 @@ plugins=(
 )
 
 source $ZSH/oh-my-zsh.sh
+source ~/.config/zsh/monochrome-syntax.zsh
 
 # User configuration
 #
@@ -115,18 +116,6 @@ source ~/.cache/wal/colors-tty.sh
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
-function load_local_zshenv {
-     if [[ -f .zsenv ]]; then
-         source .zsenv
-     fi
- }
-
- # Hook into the 'chpwd' function to automatically load the local .zshenv on directory change.
- autoload -Uz add-zsh-hook
- add-zsh-hook chpwd load_local_zshenv
- # Load local .zshenv for the current directory (if exists)
- load_local_zshenv
-
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
@@ -135,6 +124,32 @@ function load_local_zshenv {
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# Find a command in history and paste to input buffer
+_fh_select() {
+  fc -lnr 1 \
+    | awk '!seen[$0]++' \
+    | fzf --tiebreak=index --height 40% --reverse --query="$*"
+}
+
+fh() {
+  local cmd
+  cmd=$(_fh_select "$*")
+  [[ -n $cmd ]] && print -z -- "$cmd"
+}
+
+fh_widget() {
+  local cmd
+  cmd=$(_fh_select "$BUFFER")
+  if [[ -n $cmd ]]; then
+    BUFFER="$cmd"
+    CURSOR=${#BUFFER}
+  fi
+  zle redisplay
+}
+
+zle -N fh_widget
+bindkey '^F' fh_widget
 
 if [ -d "$HOME/.bin" ] ;
   then PATH="$HOME/.bin:$PATH"
@@ -167,16 +182,19 @@ alias v="nvim"
 alias vr="nvim -R -c 'nnoremap q :q<CR>'"
 alias se="sudoedit"
 
-# Changing "ls" to "lsd"
-alias ls='lsd -al --color=always --group-directories-first'
-alias la='lsd -a --color=always --group-directories-first'
-alias ll='lsd -l --color=always --group-directories-first'
-alias lt='lsd -aT --color=always --group-directories-first'
-alias l.='lsd -a | egrep "^\."'
+# Changing "ls" to "eza"
+alias ls='eza -al --color=always --group-directories-first'
+alias la='eza -a --color=always --group-directories-first'
+alias ll='eza -l --color=always --group-directories-first'
+alias lt='eza -aT --color=always --group-directories-first'
+alias l='eza -a | egrep "^\."'
 ## Colorize the grep command output for ease of use (good for log files)##
 alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
+
+
+alias cl="clear"
 
 #readable output
 alias df='df -h'
@@ -190,11 +208,6 @@ alias pacman='sudo pacman --color auto'
 alias update='sudo pacman -Syyu --noconfirm && yay -Su --noconfirm'
 #grub update
 alias update-grub="sudo grub-mkconfig -o /boot/grub/grub.cfg"
-
-
-# source custom functions
-source ~/.zsh_custom_funs
-
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

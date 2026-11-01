@@ -1,8 +1,7 @@
 #!/usr/bin/env zsh
-#
-export GIT_AUTHOR_EMAIL='m.pisegov@vkteam.ru'
-export GIT_COMMITTER_EMAIL='m.pisegov@vkteam.ru'
 
-export XKBSWITCH_SET_LAYOUT='xkbswitch -se'
-export XKBSWITCH_GET_LAYOUT='xkbswitch -ge'
-export XKBSWITCH_US_METHOD='ABC'
+export XKBSWITCH_SET_LAYOUT='macism'
+export XKBSWITCH_GET_LAYOUT='macism'
+export XKBSWITCH_US_METHOD='com.apple.keylayout.US'
+
+export JAVA_HOME="$(/usr/libexec/java_home -v 21)"
